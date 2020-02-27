@@ -1,0 +1,447 @@
+<!DOCTYPE html>
+
+<html xmlns="http://www.w3.org/1999/xhtml">
+
+<head>
+
+<meta charset="utf-8" />
+<meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+<meta name="generator" content="pandoc" />
+
+<meta name="viewport" content="width=device-width, initial-scale=1">
+
+<meta name="author" content="Niklas Roming" />
+
+<meta name="date" content="2018-07-05" />
+
+<title>IDA: Usage</title>
+
+
+
+<style type="text/css">code{white-space: pre;}</style>
+<style type="text/css">
+div.sourceCode { overflow-x: auto; }
+table.sourceCode, tr.sourceCode, td.lineNumbers, td.sourceCode {
+  margin: 0; padding: 0; vertical-align: baseline; border: none; }
+table.sourceCode { width: 100%; line-height: 100%; }
+td.lineNumbers { text-align: right; padding-right: 4px; padding-left: 4px; color: #aaaaaa; border-right: 1px solid #aaaaaa; }
+td.sourceCode { padding-left: 5px; }
+code > span.kw { color: #007020; font-weight: bold; } /* Keyword */
+code > span.dt { color: #902000; } /* DataType */
+code > span.dv { color: #40a070; } /* DecVal */
+code > span.bn { color: #40a070; } /* BaseN */
+code > span.fl { color: #40a070; } /* Float */
+code > span.ch { color: #4070a0; } /* Char */
+code > span.st { color: #4070a0; } /* String */
+code > span.co { color: #60a0b0; font-style: italic; } /* Comment */
+code > span.ot { color: #007020; } /* Other */
+code > span.al { color: #ff0000; font-weight: bold; } /* Alert */
+code > span.fu { color: #06287e; } /* Function */
+code > span.er { color: #ff0000; font-weight: bold; } /* Error */
+code > span.wa { color: #60a0b0; font-weight: bold; font-style: italic; } /* Warning */
+code > span.cn { color: #880000; } /* Constant */
+code > span.sc { color: #4070a0; } /* SpecialChar */
+code > span.vs { color: #4070a0; } /* VerbatimString */
+code > span.ss { color: #bb6688; } /* SpecialString */
+code > span.im { } /* Import */
+code > span.va { color: #19177c; } /* Variable */
+code > span.cf { color: #007020; font-weight: bold; } /* ControlFlow */
+code > span.op { color: #666666; } /* Operator */
+code > span.bu { } /* BuiltIn */
+code > span.ex { } /* Extension */
+code > span.pp { color: #bc7a00; } /* Preprocessor */
+code > span.at { color: #7d9029; } /* Attribute */
+code > span.do { color: #ba2121; font-style: italic; } /* Documentation */
+code > span.an { color: #60a0b0; font-weight: bold; font-style: italic; } /* Annotation */
+code > span.cv { color: #60a0b0; font-weight: bold; font-style: italic; } /* CommentVar */
+code > span.in { color: #60a0b0; font-weight: bold; font-style: italic; } /* Information */
+</style>
+
+
+
+<link href="data:text/css;charset=utf-8,body%20%7B%0Abackground%2Dcolor%3A%20%23fff%3B%0Amargin%3A%201em%20auto%3B%0Amax%2Dwidth%3A%20700px%3B%0Aoverflow%3A%20visible%3B%0Apadding%2Dleft%3A%202em%3B%0Apadding%2Dright%3A%202em%3B%0Afont%2Dfamily%3A%20%22Open%20Sans%22%2C%20%22Helvetica%20Neue%22%2C%20Helvetica%2C%20Arial%2C%20sans%2Dserif%3B%0Afont%2Dsize%3A%2014px%3B%0Aline%2Dheight%3A%201%2E35%3B%0A%7D%0A%23header%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0A%23TOC%20%7B%0Aclear%3A%20both%3B%0Amargin%3A%200%200%2010px%2010px%3B%0Apadding%3A%204px%3B%0Awidth%3A%20400px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Aborder%2Dradius%3A%205px%3B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Afont%2Dsize%3A%2013px%3B%0Aline%2Dheight%3A%201%2E3%3B%0A%7D%0A%23TOC%20%2Etoctitle%20%7B%0Afont%2Dweight%3A%20bold%3B%0Afont%2Dsize%3A%2015px%3B%0Amargin%2Dleft%3A%205px%3B%0A%7D%0A%23TOC%20ul%20%7B%0Apadding%2Dleft%3A%2040px%3B%0Amargin%2Dleft%3A%20%2D1%2E5em%3B%0Amargin%2Dtop%3A%205px%3B%0Amargin%2Dbottom%3A%205px%3B%0A%7D%0A%23TOC%20ul%20ul%20%7B%0Amargin%2Dleft%3A%20%2D2em%3B%0A%7D%0A%23TOC%20li%20%7B%0Aline%2Dheight%3A%2016px%3B%0A%7D%0Atable%20%7B%0Amargin%3A%201em%20auto%3B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dcolor%3A%20%23DDDDDD%3B%0Aborder%2Dstyle%3A%20outset%3B%0Aborder%2Dcollapse%3A%20collapse%3B%0A%7D%0Atable%20th%20%7B%0Aborder%2Dwidth%3A%202px%3B%0Apadding%3A%205px%3B%0Aborder%2Dstyle%3A%20inset%3B%0A%7D%0Atable%20td%20%7B%0Aborder%2Dwidth%3A%201px%3B%0Aborder%2Dstyle%3A%20inset%3B%0Aline%2Dheight%3A%2018px%3B%0Apadding%3A%205px%205px%3B%0A%7D%0Atable%2C%20table%20th%2C%20table%20td%20%7B%0Aborder%2Dleft%2Dstyle%3A%20none%3B%0Aborder%2Dright%2Dstyle%3A%20none%3B%0A%7D%0Atable%20thead%2C%20table%20tr%2Eeven%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Ap%20%7B%0Amargin%3A%200%2E5em%200%3B%0A%7D%0Ablockquote%20%7B%0Abackground%2Dcolor%3A%20%23f6f6f6%3B%0Apadding%3A%200%2E25em%200%2E75em%3B%0A%7D%0Ahr%20%7B%0Aborder%2Dstyle%3A%20solid%3B%0Aborder%3A%20none%3B%0Aborder%2Dtop%3A%201px%20solid%20%23777%3B%0Amargin%3A%2028px%200%3B%0A%7D%0Adl%20%7B%0Amargin%2Dleft%3A%200%3B%0A%7D%0Adl%20dd%20%7B%0Amargin%2Dbottom%3A%2013px%3B%0Amargin%2Dleft%3A%2013px%3B%0A%7D%0Adl%20dt%20%7B%0Afont%2Dweight%3A%20bold%3B%0A%7D%0Aul%20%7B%0Amargin%2Dtop%3A%200%3B%0A%7D%0Aul%20li%20%7B%0Alist%2Dstyle%3A%20circle%20outside%3B%0A%7D%0Aul%20ul%20%7B%0Amargin%2Dbottom%3A%200%3B%0A%7D%0Apre%2C%20code%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0Aborder%2Dradius%3A%203px%3B%0Acolor%3A%20%23333%3B%0Awhite%2Dspace%3A%20pre%2Dwrap%3B%20%0A%7D%0Apre%20%7B%0Aborder%2Dradius%3A%203px%3B%0Amargin%3A%205px%200px%2010px%200px%3B%0Apadding%3A%2010px%3B%0A%7D%0Apre%3Anot%28%5Bclass%5D%29%20%7B%0Abackground%2Dcolor%3A%20%23f7f7f7%3B%0A%7D%0Acode%20%7B%0Afont%2Dfamily%3A%20Consolas%2C%20Monaco%2C%20%27Courier%20New%27%2C%20monospace%3B%0Afont%2Dsize%3A%2085%25%3B%0A%7D%0Ap%20%3E%20code%2C%20li%20%3E%20code%20%7B%0Apadding%3A%202px%200px%3B%0A%7D%0Adiv%2Efigure%20%7B%0Atext%2Dalign%3A%20center%3B%0A%7D%0Aimg%20%7B%0Abackground%2Dcolor%3A%20%23FFFFFF%3B%0Apadding%3A%202px%3B%0Aborder%3A%201px%20solid%20%23DDDDDD%3B%0Aborder%2Dradius%3A%203px%3B%0Aborder%3A%201px%20solid%20%23CCCCCC%3B%0Amargin%3A%200%205px%3B%0A%7D%0Ah1%20%7B%0Amargin%2Dtop%3A%200%3B%0Afont%2Dsize%3A%2035px%3B%0Aline%2Dheight%3A%2040px%3B%0A%7D%0Ah2%20%7B%0Aborder%2Dbottom%3A%204px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Apadding%2Dbottom%3A%202px%3B%0Afont%2Dsize%3A%20145%25%3B%0A%7D%0Ah3%20%7B%0Aborder%2Dbottom%3A%202px%20solid%20%23f7f7f7%3B%0Apadding%2Dtop%3A%2010px%3B%0Afont%2Dsize%3A%20120%25%3B%0A%7D%0Ah4%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23f7f7f7%3B%0Amargin%2Dleft%3A%208px%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Ah5%2C%20h6%20%7B%0Aborder%2Dbottom%3A%201px%20solid%20%23ccc%3B%0Afont%2Dsize%3A%20105%25%3B%0A%7D%0Aa%20%7B%0Acolor%3A%20%230033dd%3B%0Atext%2Ddecoration%3A%20none%3B%0A%7D%0Aa%3Ahover%20%7B%0Acolor%3A%20%236666ff%3B%20%7D%0Aa%3Avisited%20%7B%0Acolor%3A%20%23800080%3B%20%7D%0Aa%3Avisited%3Ahover%20%7B%0Acolor%3A%20%23BB00BB%3B%20%7D%0Aa%5Bhref%5E%3D%22http%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0Aa%5Bhref%5E%3D%22https%3A%22%5D%20%7B%0Atext%2Ddecoration%3A%20underline%3B%20%7D%0A%0Acode%20%3E%20span%2Ekw%20%7B%20color%3A%20%23555%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Edt%20%7B%20color%3A%20%23902000%3B%20%7D%20%0Acode%20%3E%20span%2Edv%20%7B%20color%3A%20%2340a070%3B%20%7D%20%0Acode%20%3E%20span%2Ebn%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Efl%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Ech%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Est%20%7B%20color%3A%20%23d14%3B%20%7D%20%0Acode%20%3E%20span%2Eco%20%7B%20color%3A%20%23888888%3B%20font%2Dstyle%3A%20italic%3B%20%7D%20%0Acode%20%3E%20span%2Eot%20%7B%20color%3A%20%23007020%3B%20%7D%20%0Acode%20%3E%20span%2Eal%20%7B%20color%3A%20%23ff0000%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%0Acode%20%3E%20span%2Efu%20%7B%20color%3A%20%23900%3B%20font%2Dweight%3A%20bold%3B%20%7D%20%20code%20%3E%20span%2Eer%20%7B%20color%3A%20%23a61717%3B%20background%2Dcolor%3A%20%23e3d2d2%3B%20%7D%20%0A" rel="stylesheet" type="text/css" />
+
+</head>
+
+<body>
+
+
+
+
+<h1 class="title toc-ignore">IDA: Usage</h1>
+<h4 class="author"><em>Niklas Roming</em></h4>
+<h4 class="date"><em>2018-07-05</em></h4>
+
+
+
+<div id="basic-considerations" class="section level1">
+<h1>Basic considerations</h1>
+<p>Base R and especially the functionality added by the <code>dplyr</code> package in principle provide everything that is needed to do all the operations described in this document. <code>IDA</code> is useful as it packs or wraps complex commands from base R and/or dplyr in <em>convenience functions</em> specifically designed for a certain purpose, but only of this has the potential to save the user some time or inprove reproducability.</p>
+<p>The main advantages of this approach are:</p>
+<ul>
+<li>A user can save a lot of time and thinking by not thinking herself about how to implement a certain computation (e.g. growth rate), but rather relying on a predefined function.</li>
+<li>These functions also act as a way of standardizing the way certain things are done across CA. If, for example, there is a function that determines the year some emissions reach de factor zero as the year in which emissions drop to below 5 percent of a base year value, then this can easily be implemented in a function and the user only has to provide the data, relying on sensible default values (which can of course be modified).</li>
+</ul>
+</div>
+<div id="filtering" class="section level1">
+<h1>Filtering</h1>
+<p>For filtering, one can rely on the <code>filter</code>-function from the <code>dplyr</code> package, which is loaded automatically when loading <code>IDA</code>. For those people who already know R, but are used to the base R <code>subset()</code> function, there is no strict necessity to switch to <code>filter()</code>. The main reason to use <code>filter()</code>is that it fits in well with other functions from the <code>dplyr</code> and related packages.</p>
+<p>For example, let us filter for a certain source. <code>idata</code> is the main dataset contained in <code>IDA</code>:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="co"># load the required packages</span>
+<span class="kw">library</span>(IDA)
+<span class="kw">library</span>(knitr)
+
+<span class="co"># filter for AR5 data</span>
+ar5 &lt;-<span class="st"> </span><span class="kw">filter</span>(idata, source_id <span class="op">==</span><span class="st"> &quot;AR5&quot;</span>)
+
+<span class="kw">head</span>(ar5)</code></pre></div>
+<pre><code>##   source_id           model       scenario spatial temporal
+## 1       AR5 AIM-Enduse 12.1 EMF27-450-Conv    ASIA     2005
+## 2       AR5 AIM-Enduse 12.1 EMF27-450-Conv    ASIA     2005
+## 3       AR5 AIM-Enduse 12.1 EMF27-450-Conv    ASIA     2005
+## 4       AR5 AIM-Enduse 12.1 EMF27-450-Conv    ASIA     2005
+## 5       AR5 AIM-Enduse 12.1 EMF27-450-Conv    ASIA     2005
+## 6       AR5 AIM-Enduse 12.1 EMF27-450-Conv    ASIA     2005
+##                                  variable            unit        value
+## 1                           Emissions|CH4       Mt CH4/yr   135.655230
+## 2                           Emissions|CO2       Mt CO2/yr 10540.737486
+## 3 Emissions|CO2|Fossil Fuels and Industry       Mt CO2/yr  9126.178808
+## 4                  Emissions|CO2|Land Use       Mt CO2/yr  1414.558679
+## 5                       Emissions|F-Gases Mt CO2-equiv/yr   151.222433
+## 6                           Emissions|N2O       Mt N2O/yr     3.242351</code></pre>
+<p>This will return all data contained in the IPCC’s AR5 database and store it in the new R object <code>tmp</code>, of which the <code>head()</code> command prints the first 6 rows (see the row numbers <code>## 1</code> to <code>## 6</code> on the left hand side). <code>source_id, model, scenario, spatial, temporal, variable, unit, value</code> are the names of the respective columns, which are explained in detail in <em>data documentation</em>. Just quickly:</p>
+<ul>
+<li><p><code>source_id</code> contains a unique identifier for the data source. Currently, the following are available: <code>WDI_2015, WDI_2016, WPP_2015, AR5, LIMITS, AMPERE, SSP, EDGARv4, WEO_2016, Joeri_1p5, RCP, IEA_2014, SSP-IAM, Rogelj2018, AME, ETP2017</code>.</p></li>
+<li><p><code>model</code> contains a description of the model which was used for supllying the data, e.g. “REMIND” or “MESSAGE”. It can also contain further specifications like the model version used (“REMIND 1.5”).</p></li>
+<li><p><code>scenario</code> contains the different scenarios e.g. for IAM models from the AR5 database. For historical data like that from the WDI, the scenario is usually names history to indicate that it is measured data, not model output data.</p></li>
+<li><p><code>variable</code> contains the obvious - a variable identifier</p></li>
+<li><p><code>unit</code> is the unit, in which the values of variable are stored.</p></li>
+<li><p><code>value</code> is the actual value of each combination of the other columns, which serve as identifiers</p></li>
+</ul>
+<p>Lets display above information a bit nicer:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r"><span class="kw">kable</span>(<span class="kw">head</span>(ar5), <span class="dt">format =</span> <span class="st">'markdown'</span>)</code></pre></div>
+<table style="width:100%;">
+<colgroup>
+<col width="7%"></col>
+<col width="11%"></col>
+<col width="11%"></col>
+<col width="6%"></col>
+<col width="6%"></col>
+<col width="35%"></col>
+<col width="11%"></col>
+<col width="9%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">source_id</th>
+<th align="left">model</th>
+<th align="left">scenario</th>
+<th align="left">spatial</th>
+<th align="right">temporal</th>
+<th align="left">variable</th>
+<th align="left">unit</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">AR5</td>
+<td align="left">AIM-Enduse 12.1</td>
+<td align="left">EMF27-450-Conv</td>
+<td align="left">ASIA</td>
+<td align="right">2005</td>
+<td align="left">Emissions|CH4</td>
+<td align="left">Mt CH4/yr</td>
+<td align="right">135.655230</td>
+</tr>
+<tr class="even">
+<td align="left">AR5</td>
+<td align="left">AIM-Enduse 12.1</td>
+<td align="left">EMF27-450-Conv</td>
+<td align="left">ASIA</td>
+<td align="right">2005</td>
+<td align="left">Emissions|CO2</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">10540.737486</td>
+</tr>
+<tr class="odd">
+<td align="left">AR5</td>
+<td align="left">AIM-Enduse 12.1</td>
+<td align="left">EMF27-450-Conv</td>
+<td align="left">ASIA</td>
+<td align="right">2005</td>
+<td align="left">Emissions|CO2|Fossil Fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">9126.178808</td>
+</tr>
+<tr class="even">
+<td align="left">AR5</td>
+<td align="left">AIM-Enduse 12.1</td>
+<td align="left">EMF27-450-Conv</td>
+<td align="left">ASIA</td>
+<td align="right">2005</td>
+<td align="left">Emissions|CO2|Land Use</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">1414.558679</td>
+</tr>
+<tr class="odd">
+<td align="left">AR5</td>
+<td align="left">AIM-Enduse 12.1</td>
+<td align="left">EMF27-450-Conv</td>
+<td align="left">ASIA</td>
+<td align="right">2005</td>
+<td align="left">Emissions|F-Gases</td>
+<td align="left">Mt CO2-equiv/yr</td>
+<td align="right">151.222433</td>
+</tr>
+<tr class="even">
+<td align="left">AR5</td>
+<td align="left">AIM-Enduse 12.1</td>
+<td align="left">EMF27-450-Conv</td>
+<td align="left">ASIA</td>
+<td align="right">2005</td>
+<td align="left">Emissions|N2O</td>
+<td align="left">Mt N2O/yr</td>
+<td align="right">3.242351</td>
+</tr>
+</tbody>
+</table>
+<p><code>kable()</code> is a function of the <code>knitr</code> R package, which makes it possible to mix descriptive text and code in one document and create nice output. <code>knitr</code> is also used for the documentation you are currently reading.</p>
+<p>One can also combine seach criteria. Let’s filter for CO2 emissions data from MESSAGE in the scenarios Joeri provided us with:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">co2_glob &lt;-<span class="st"> </span><span class="kw">filter</span>(idata, source_id <span class="op">==</span><span class="st"> &quot;Joeri_1p5&quot;</span>, variable <span class="op">==</span><span class="st"> &quot;Emissions|CO2|Total&quot;</span>, spatial <span class="op">==</span><span class="st"> &quot;World&quot;</span>)</code></pre></div>
+<p>Let’s plot that:</p>
+<p><img src="data:image/png;base64,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" /><!-- --></p>
+<p>One cannot see much as there are too many scenarios in that data set. See more on plotting in the section on <a href="#plotting">Plotting</a> below.</p>
+<p>You can also use filter with inequalities. Let’s say we want to filter out regions that still have positive CO2 emissions from fossil fuels and industry in 2060:</p>
+<div class="sourceCode"><pre class="sourceCode r"><code class="sourceCode r">co2_1p5_<span class="dv">2060</span> &lt;-<span class="st"> </span><span class="kw">filter</span>(idata, source_id <span class="op">==</span><span class="st"> &quot;Joeri_1p5&quot;</span>, temporal <span class="op">==</span><span class="st"> </span><span class="dv">2060</span>,
+                       spatial <span class="op">!=</span><span class="st"> &quot;World&quot;</span>,
+                       scenario <span class="op">==</span><span class="st"> &quot;myo_L15_BC_a&quot;</span>,
+                       variable <span class="op">==</span><span class="st"> &quot;Emissions|CO2|Fossil fuels and Industry&quot;</span>,
+                       value <span class="op">&gt;</span><span class="st"> </span><span class="dv">0</span>)</code></pre></div>
+<p>Now, this is a bit more interesting: We filter out data from Joeri’s 1p5 scenario data, specifically the scenario <code>myo_L15BC_a</code>, which is the 1p5 scenario we were using all the time throughout 2016 and 2017<a href="#fn1" class="footnoteRef" id="fnref1"><sup>1</sup></a>. Also, we exclude the region <code>World</code>, since we are only interested in regional information, and we filter not for total CO2 emissions, but only for emissions from fossil fuels and industry. Finally, we only want to have values greater than zero returned.</p>
+<p>The result looks like this:</p>
+<table>
+<colgroup>
+<col width="8%"></col>
+<col width="7%"></col>
+<col width="11%"></col>
+<col width="7%"></col>
+<col width="8%"></col>
+<col width="41%"></col>
+<col width="8%"></col>
+<col width="6%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">source_id</th>
+<th align="left">model</th>
+<th align="left">scenario</th>
+<th align="left">spatial</th>
+<th align="right">temporal</th>
+<th align="left">variable</th>
+<th align="left">unit</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L15_BC_a</td>
+<td align="left">MEA</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">533.22</td>
+</tr>
+<tr class="even">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L15_BC_a</td>
+<td align="left">SAS</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">665.95</td>
+</tr>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L15_BC_a</td>
+<td align="left">CPA</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">158.19</td>
+</tr>
+</tbody>
+</table>
+<p>You can also filter for multiple entries at once. Let’s say you want to also know which regions are still positive in terms of their CO2 emissions from fossil fuels and industry in a comparable 2 degree scenario:</p>
+<p>The difference is in the third line, where instead of <code>scenario == &quot;myo_L15_BC_a&quot;</code>, we now write <code>scenario %in% c(&quot;myo_L15_BC_a&quot;, &quot;myo_L_BC_a&quot;)</code>, which translates to <em>scenario is one of myo_L15_BC_a&quot; and “myo_L_BC_a”</em>, with <em>myo_L_BC_a</em> being a 2 degree scenario. <code>c(&quot;myo_L15_BC_a&quot;, &quot;myo_L_BC_a&quot;)</code> is a vector definition, where <code>c</code> stands for <em>combine</em>. Such a vector can contain a arbitary number of elements. If one or several elements of the vector cannot be found by <code>filter</code>, it simply returns data for those where it actually found a match.</p>
+<table>
+<colgroup>
+<col width="8%"></col>
+<col width="7%"></col>
+<col width="11%"></col>
+<col width="7%"></col>
+<col width="8%"></col>
+<col width="41%"></col>
+<col width="8%"></col>
+<col width="7%"></col>
+</colgroup>
+<thead>
+<tr class="header">
+<th align="left">source_id</th>
+<th align="left">model</th>
+<th align="left">scenario</th>
+<th align="left">spatial</th>
+<th align="right">temporal</th>
+<th align="left">variable</th>
+<th align="left">unit</th>
+<th align="right">value</th>
+</tr>
+</thead>
+<tbody>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L15_BC_a</td>
+<td align="left">MEA</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">533.22</td>
+</tr>
+<tr class="even">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L15_BC_a</td>
+<td align="left">SAS</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">665.95</td>
+</tr>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L15_BC_a</td>
+<td align="left">CPA</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">158.19</td>
+</tr>
+<tr class="even">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L_BC_a</td>
+<td align="left">MEA</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">1240.86</td>
+</tr>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L_BC_a</td>
+<td align="left">PAS</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">422.94</td>
+</tr>
+<tr class="even">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L_BC_a</td>
+<td align="left">SAS</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">2258.65</td>
+</tr>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L_BC_a</td>
+<td align="left">WEU</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">336.50</td>
+</tr>
+<tr class="even">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L_BC_a</td>
+<td align="left">CPA</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">1565.51</td>
+</tr>
+<tr class="odd">
+<td align="left">Joeri_1p5</td>
+<td align="left">MESSAGE</td>
+<td align="left">myo_L_BC_a</td>
+<td align="left">EEU</td>
+<td align="right">2060</td>
+<td align="left">Emissions|CO2|Fossil fuels and Industry</td>
+<td align="left">Mt CO2/yr</td>
+<td align="right">0.63</td>
+</tr>
+</tbody>
+</table>
+<p>As expected, we can see that in the 2 degree scenario, several more regions are still emitting in 2060 compared to the 1.5 degree scenario.</p>
+</div>
+<div id="aggregation" class="section level1">
+<h1>Aggregation</h1>
+<div id="simple-aggregation" class="section level2">
+<h2>Simple aggregation</h2>
+<p>Often times, one does not only need to extract some data, but actually wants to find out some aggregate characteristic about it. Simple questions could be:</p>
+<ul>
+<li>How many scenarios are available from a specific source?</li>
+<li>For one source, i.e. AR5, how many scenarios are available for each model?</li>
+<li></li>
+</ul>
+</div>
+<div id="more-complex-aggregation" class="section level2">
+<h2>More complex aggregation</h2>
+<ul>
+<li>What is the cumulative global CO2 budget between 2018 and 2100?</li>
+<li>What is the median pathway for total CO2 emissions for a group of scenarios?</li>
+</ul>
+</div>
+</div>
+<div id="manipulation" class="section level1">
+<h1>Manipulation</h1>
+</div>
+<div id="output" class="section level1">
+<h1>Output</h1>
+</div>
+<div id="plotting" class="section level1">
+<h1>Plotting</h1>
+</div>
+<div class="footnotes">
+<hr />
+<ol>
+<li id="fn1"><p>Filtering for both <code>source_id == &quot;Joeri_1p5&quot;</code> and <code>scenario == &quot;myo_L15_BC_a&quot;</code> is redundant, as this scenario is only present in Joeri’s data. Therefore, one could have left out filtering for the source.<a href="#fnref1">↩</a></p></li>
+</ol>
+</div>
+
+
+
+<!-- dynamically load mathjax for compatibility with self-contained -->
+<script>
+  (function () {
+    var script = document.createElement("script");
+    script.type = "text/javascript";
+    script.src  = "https://mathjax.rstudio.com/latest/MathJax.js?config=TeX-AMS-MML_HTMLorMML";
+    document.getElementsByTagName("head")[0].appendChild(script);
+  })();
+</script>
+
+</body>
+</html>

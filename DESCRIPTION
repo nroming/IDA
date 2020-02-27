@@ -1,0 +1,29 @@
+Package: IDA
+Type: Package
+Title: Integrated Data Analysis: data sets and associated tools
+Version: 0.0.0.9000
+Authors@R: person("Niklas", "Roming", email = "niklas.roming@climateanlaytics.org", role = c("aut", "cre"))
+Description: IDA - Integrated Data Analyses consist of data from several sources
+    (both commercial and free) as well as tools for data manipulation,
+    extraction and visualisation in a simple and reproducible manner.
+URL: https://gitlab.com/climateanalytics/IDA
+BugReports: https://gitlab.com/climateanalytics/IDA/issues
+License: file LICENSE
+LazyData: TRUE
+Depends:
+    tidyverse,
+    shiny
+Imports:
+    reshape2,
+    openxlsx,
+    zoo,
+    digest,
+    dplyr,
+    ggplot2,
+    openxlsx,
+    readr
+RoxygenNote: 6.1.1
+Suggests: knitr,
+    rmarkdown,
+    readxl
+VignetteBuilder: knitr

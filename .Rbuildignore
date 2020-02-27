@@ -1,0 +1,5 @@
+^.*\.Rproj$
+^\.Rproj\.user$
+^data-raw$
+^scratchpad\.R$
+^R/scratchpad\.R$

@@ -1,0 +1,130 @@
+---
+title: "IDA: Usage"
+author: "Niklas Roming"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+# Basic considerations
+Base R and especially the functionality added by the `dplyr` package in principle provide everything that is needed to do all the operations described in this document. `IDA` is useful as it packs or wraps complex commands from base R and/or dplyr in *convenience functions* specifically designed for a certain purpose, but only of this has the potential to save the user some time or inprove reproducability.
+
+The main advantages of this approach are:
+
+* A user can save a lot of time and thinking by not thinking herself about how to implement a certain computation (e.g. growth rate), but rather relying on a predefined function.
+* These functions also act as a way of standardizing the way certain things are done across CA. If, for example, there is a function that determines the year some emissions reach de factor zero as the year in which emissions drop to below 5 percent of a base year value, then this can easily be implemented in a function and the user only has to provide the data, relying on sensible default values (which can of course be modified).
+
+# Filtering
+For filtering, one can rely on the `filter`-function from the `dplyr` package, which is loaded automatically when loading `IDA`. For those people who already know R, but are used to the base R `subset()` function, there is no strict necessity to switch to `filter()`. The main reason to use `filter()`is that it fits in well with other functions from the `dplyr` and related packages.
+
+For example, let us filter for a certain source. `idata` is the main dataset contained in `IDA`:
+```{r, message = FALSE}
+# load the required packages
+library(IDA)
+library(knitr)
+
+# filter for AR5 data
+ar5 <- filter(idata, source_id == "AR5")
+
+head(ar5)
+```
+
+This will return all data contained in the IPCC's AR5 database and store it in the new R object `tmp`, of which the `head()` command prints the first 6 rows (see the row numbers `## 1` to `## 6` on the left hand side). ```r names(ar5)``` are the names of the respective columns, which are explained in detail in *data documentation*. Just quickly:
+
+* `source_id` contains a unique identifier for the data source. Currently, the following are available: ```r unique(idata$source_id)```.
+
+* `model` contains a description of the model which was used for supllying the data, e.g. "REMIND" or "MESSAGE". It can also contain further specifications like the model version used ("REMIND 1.5").
+
+* `scenario` contains the different scenarios e.g. for IAM models from the AR5 database. For historical data like that from the WDI, the scenario is usually names history to indicate that it is measured data, not model output data.
+
+* `variable` contains the obvious - a variable identifier
+
+* `unit` is the unit, in which the values of variable are stored.
+
+* `value` is the actual value of each combination of the other columns, which serve as identifiers
+
+Lets display above information a bit nicer:
+
+```{r, message = FALSE}
+kable(head(ar5), format = 'markdown')
+```
+`kable()` is a function of the `knitr` R package, which makes it possible to mix descriptive text and code in one document and create nice output. `knitr` is also used for the documentation you are currently reading.
+
+One can also combine seach criteria. Let's filter for CO2 emissions data from MESSAGE in the scenarios Joeri provided us with:
+
+```{r}
+co2_glob <- filter(idata, source_id == "Joeri_1p5", variable == "Emissions|CO2|Total", spatial == "World")
+```
+
+Let's plot that:
+
+```{r, echo = FALSE}
+library(ggplot2)
+
+ggplot(co2_glob, aes(x = temporal, y = value, group = scenario)) +
+  geom_line() +
+  ggtitle(unique(co2_glob$variable)) +
+  labs(x = "year", y = "Mt CO2/yr") +
+  theme_bw()
+
+```
+
+One cannot see much as there are too many scenarios in that data set. See more on plotting in the section on [Plotting] below.
+
+You can also use filter with inequalities. Let's say we want to filter out regions that still have positive CO2 emissions from fossil fuels and industry in 2060:
+
+```{r, message = FALSE}
+co2_1p5_2060 <- filter(idata, source_id == "Joeri_1p5", temporal == 2060,
+                       spatial != "World",
+                       scenario == "myo_L15_BC_a",
+                       variable == "Emissions|CO2|Fossil fuels and Industry",
+                       value > 0)
+
+```
+
+Now, this is a bit more interesting: We filter out data from Joeri's 1p5 scenario data, specifically the scenario `myo_L15BC_a`, which is the 1p5 scenario we were using all the time throughout 2016 and 2017^[Filtering for both `source_id == "Joeri_1p5"` and `scenario == "myo_L15_BC_a"` is redundant, as this scenario is only present in Joeri's data. Therefore, one could have left out filtering for the source.]. Also, we exclude the region `World`, since we are only interested in regional information, and we filter not for total CO2 emissions, but only for emissions from fossil fuels and industry. Finally, we only want to have values greater than zero returned.
+
+The result looks like this:
+
+```{r, echo = FALSE}
+kable(co2_1p5_2060, format = "markdown")
+```
+
+You can also filter for multiple entries at once. Let's say you want to also know which regions are still positive in terms of their CO2 emissions from fossil fuels and industry in a comparable 2 degree scenario:
+
+```{r, echo = FALSE}
+co2_2060 <-  filter(idata, source_id == "Joeri_1p5", temporal == 2060,
+                    spatial != "World",
+                    scenario %in% c("myo_L15_BC_a", "myo_L_BC_a"),
+                    variable == "Emissions|CO2|Fossil fuels and Industry",
+                    value > 0)
+```
+
+The difference is in the third line, where instead of `scenario == "myo_L15_BC_a"`, we now write `scenario %in% c("myo_L15_BC_a", "myo_L_BC_a")`, which translates to *scenario is one of myo_L15_BC_a" and "myo_L_BC_a"*, with *myo_L_BC_a* being a 2 degree scenario. `c("myo_L15_BC_a", "myo_L_BC_a")` is a vector definition, where `c` stands for *combine*. Such a vector can contain a arbitary number of elements. If one or several elements of the vector cannot be found by `filter`, it simply returns data for those where it actually found a match.
+
+```{r, echo = FALSE}
+kable(co2_2060, format = "markdown")
+```
+
+As expected, we can see that in the 2 degree scenario, several more regions are still emitting in 2060 compared to the 1.5 degree scenario.
+
+# Aggregation
+## Simple aggregation
+Often times, one does not only need to extract some data, but actually wants to find out some aggregate characteristic about it. Simple questions could be:
+
+* How many scenarios are available from a specific source?
+* For one source, i.e. AR5, how many scenarios are available for each model?
+* 
+
+## More complex aggregation
+* What is the cumulative global CO2 budget between 2018 and 2100?
+* What is the median pathway for total CO2 emissions for a group of scenarios?
+
+# Manipulation
+
+# Output
+
+# Plotting

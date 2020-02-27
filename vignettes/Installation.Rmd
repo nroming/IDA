@@ -1,0 +1,177 @@
+---
+title: "IDA: Installation"
+author: "Niklas Roming"
+date: "`r Sys.Date()`"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Vignette Title}
+  %\VignetteEngine{knitr::rmarkdown} 
+  %\VignetteEncoding{UTF-8}
+---
+
+# Installation
+
+## Preliminaries
+### Gitlab account
+We use [git](https://en.wikipedia.org/wiki/Git) as a [version control 
+systeml](https://en.wikipedia.org/wiki/Version_control) to track changes and 
+organize development of IDA. You need to register an account at 
+[gitlab](https://gitlab.com/users/sign_in) and inform one of the maintainers of 
+IDA about your username to grant you access to the project (and the 
+climateanalytics group on gitlab in general). As of July 2017, these person are 
+[Niklas](mailto:niklas.roming@climateanalytics.org) and 
+[Carl](mailto:carl.schleussner@climateanalytics.org). While waiting for a reply,
+you can continue below ;)
+
+### macOS: Install developer tools
+Open up a terminal (e.g. by hitting the *cmd*
+and *space* key and typing *Terminal*) and enter ``git``. If you have never
+installed anything related to coding on your Mac before, this will likely result
+in a message stating that *The "git" command requires the command line developer
+tools. Would you like to install the tools now?* or similar. Please choose
+*Install* and agree the ensuing license agreement. Downloading and installation
+will take a few minutes. Hit *Done* once your Mac confirms installation.
+
+### Setup git
+Now you need to configure your git installation. On the Terminal,
+type
+
+```bash
+git config --global user.name "YOUR_USERNAME"
+```
+
+```bash
+git config --global user.email "your_email_address@example.com"
+``` 
+
+entering the values you have used while setting up your gitlab account above for
+the user name and email address, and hit *enter*. You can check if you have
+entered the correct values by entering ``git config --global user.name`` or
+``git config--global user.email`` and rerunning above command in case there are
+errors.
+
+### Setup secure access to gitlab using ssh
+[Secure shell](https://en.wikipedia.org/wiki/Secure_Shell) (ssh) is a secure way to
+communicate and transfer data between computers. It uses public-private key
+cryptography to secure the connection.
+
+If you do not yet have setup *ssh* before, you need to first create a key-pair,
+which is nothing but a pair of files on your computer.
+
+On the terminal, enter:
+
+```bash
+ssh-keygen -t rsa -C "your.email@example.com" -b 4096
+```
+
+replacing the email adress with the email adress you used for registering your
+gitlab account and setting up git on your computer. In the following dialogue on
+the Terminal, just confirm the filename and leave the password empty. Now you
+need to make gitlab aware of your public key. On the Terminal, enter:
+
+```bash
+less .ssh/id_rsa.pub
+```
+
+Now, the public key is the gibberish output resulting from this, e.g.
+
+```bash 
+ssh-rsa AAAAB3NzaC1yc2EAAAADAQABAAACAQCefwgjP4qgFXXyNnaAPelYp2SHnHTHvFfpp52b4Hiy
+HD5YyVOXSq35gIOmwQ1dCgl0u17Kp5V6j7V+62XnYG+Iod89d2Y8QB/C2VGYVxNsoKY2xu5woPQ63FLQ
+RZgnL8wRORoG0fsHNOzm7ZgYwGvBTWBKXK+z/UzHsh4Ix8voQcUimuYyx9+6WGIU9Bhdd5bHtrdvFVA/
++3TJgQKuYKndpqNWzDai62Cmk0g1lEQ9/L1uGzR8aIDEs62qZ2yqYS1V/CGw1x4SvvpMR/yoFUvpO8TF
+gZOrr8h+I1B8wOeQyaDpfC0GHLnGL7+1V/PrhZpp8X3vYoZHVWOhMDijtxnPO3WL5l9ffTNuSFtNvrkf
+FNHHJgA0LIHHdgx3NimviKc7vBfK1FR/BO87jr9g3NpoS8JGG85Uo+tiFElirgIyGhskaZ7UalC+BSW5
+hbNXCRQUA0OE/1wu/kaqx6L7us6II6+4Jtyxn9e6lR0TU7Nnel2enq6yCF74bdhBj89PDjXbi4ulwAZF
+yfCEI5W6Cvv1PY40pakiw0EzjycLTBcimEWI29vCgubajV+WHUiUc2BrIjQAlroWx8pIHthEXY+h5Wno
+PhiMVkYrbhxceMxK4Hvq9lCKOA8p0qxXIFkEWsj9U/9H7wZgbUNZirEA8bYCKyC98BnahtxWTsjX6+eB
+iw== it@climateanalytics.com
+```
+
+This key is not actually functioning anymore ;)
+
+Copy the key by highlighting everything from (including) ```ssh-rsa``` and to
+(including) the email adress, pressing *cmd* + *C* and pasting it via *cmd* +
+*V* into the appropriate field on
+[https://gitlab.com/profile/keys](https://gitlab.com/profile/keys) (login with
+your previously account credential required), and click *Add key*. You can close
+the key on the Terminal by pressing *q*.
+
+Now, to make this key actually work, you need to login to gitlab via the
+Terminal once:
+
+```bash
+ssh -T git@gitlab.com
+```
+
+This will result in something like:
+
+```bash
+Last login: Wed Jul 19 17:28:02 on console Climates-Mac:~ ca$ ssh -T
+git@gitlab.com The authenticity of host 'gitlab.com (52.167.219.168)' can't be
+established. ECDSA key fingerprint is
+SHA256:HbW3g8zUjNSksFbqTiUWPWg2Bq1x8xdGUrliXFzSnUw. Are you sure you want to
+continue connecting (yes/no)?
+```
+
+Answer *yes* and press enter.
+
+Please be aware that the private key, which was also created during the creation of the ssh public-private keypair, is also in your .ssh directory (the period at the beginning name makes it a hidden directory, that does not normally show up e.g. in Finder). It is usually called ``id_rsa`` and it should be kept secret. Never send it via email and do not hand it out to people or services (no uploading to box) outside of CA. These rules might not be important now since you probably only use ssh with gitlab, but should rather be considered general good practice in the handling of ssh keys.
+
+## Install R Download the most recent version or R (as of July 2017 this is
+3.4.1) e.g. from this website
+[https://ftp.gwdg.de/pub/misc/cran/](https://ftp.gwdg.de/pub/misc/cran/) and
+install it by double-clicking on the \*.pkg file (this requires Mac OS X 10.11
+(El Capitan) or higher) and going through the installation process.
+
+## Install RStudio RStudio Desktop is an advanced graphical user interface (GUI)
+to use R. It is not required as such, but makes life as an user and developer
+much easier. The basic version is Open Source and free. Download the appropriate
+installer of RStudio Desktop Free from this website:
+[https://www.rstudio.com/products/rstudio/download/](https://www.rstudio.com/products/rstudio/download/).
+
+Install RStudio by double clicking on the \*.dmg file and dropping the RStudio
+application into the applications folder.
+
+## Create a new RStudio-Project and clone the IDA git repository from gitlab 
+RStudio-projects are a great way to organize your work in RStudio. Quoting the
+[RStudio
+website](https://support.rstudio.com/hc/en-us/articles/200526207-Using-Projects):
+
+> RStudio projects make it straightforward to divide your work into multiple
+> contexts, each with their own working directory, workspace, history, and
+> source documents.
+
+After starting RStudio for the first time, you can create a new project by
+clicking on *Project (None)* and then *New Project* in the top right corner of
+RStudio. In the next window, you select *Version control* and then *Git*. In the
+next window, enter the following *Repository URL*:
+[git@gitlab.com:climateanalytics/IDA.git](git@gitlab.com:climateanalytics/IDA.git).
+Choose an appropriate directory where the IDA repository should be stored. Keep
+in mind that this is a rather large (> 5 GB) directory in which a lot of small
+files might be changed regularly by automatic processes (so do not put it on box
+as this will increase you system load tremendously) and that does not need
+backup (since it is stored remotely at gitlab). The ensuing download will take
+some time.
+
+## Install additional R-packages and *build* IDA
+An R-package is an extension of the basic R functionality. It can contain
+reusable pieces of code (a.k.a.
+functions) and/or data. IDA makes heavy use of some of the
+[packages](http://tidyverse.org) created mainly by [Hadley
+Wickham](http://hadley.nz), who today is one of the most influential people in R
+development and also working for the company behind RStudio.
+
+Install the needed packages by entering the following in the bottom left window
+(the "Console", which is the interactive command line) in RStudio:
+
+```install.packages(c("dplyr", "reshape2", "ggplot2", "openxlsx", "zoo",
+"readr")) ```
+
+Now the IDA package needs to be build. In the top-right panel of RStudio, select
+the *Build* tab. Then, hit the *Build & Reload* button and wait. The buidling
+process of the package takes some time and was completed successfuly if you see
+the message *\* DONE (IDA)* in the Build tab.
+
+After that has been completed, you should be able to load the IDA package by
+using ``library(IDA)``` on the console or as part of a script.
