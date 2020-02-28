@@ -894,8 +894,6 @@ rm(weo_2016)
 cat("Reading in Joeri's 1.5degree C scenarios from MESSAGE")
 untar("data-raw/MES_1.5deg_scenario.tar.xz", compressed = "xz", exdir = "data-raw") # uncompress data
 joeris <- read_csv2("data-raw/MES_1.5deg_scenario/MES_1.5deg_scenario/data.csv", na = c("..", "x"))
-unlink("data-raw/MES_1.5deg_scenario/", recursive = TRUE) # delete uncompressed data
-
 
 names(joeris) <- tolower(names(joeris))
 
@@ -934,8 +932,7 @@ joeris[joeris$unit == "kt N2O/yr", "value"] <-
 joeris[joeris$unit == "kt N2O/yr", "unit"] <- "Mt N2O/yr"
 
 # read in MAGICC output for Joeri's scenarios
-magicc <- read_excel(unzip("data-raw/MES_1.5deg_scenario.zip",
-                         "MES_1.5deg_scenario/Illustrative_1p5CSCENs_exceedanceProbs.xls"),
+magicc <- read_excel("data-raw/MES_1.5deg_scenario/MES_1.5deg_scenario/Illustrative_1p5CSCENs_exceedanceProbs.xls",
                      sheet = "MAGICC_output",
                      col_names = c("SCEN-file",
                                    "scenario",
@@ -946,9 +943,8 @@ magicc <- read_excel(unzip("data-raw/MES_1.5deg_scenario.zip",
                                    "IIASADB source model",
                                    "IIASADB target model"), skip = 2)
 
-# since the 'unz' command in combination with read_excel throws out an error, I
-# use unzip above and remove the unzipped data afterwards
-unlink("MES_1.5deg_scenario", recursive = TRUE)
+
+unlink("data-raw/MES_1.5deg_scenario/", recursive = TRUE) # remove uncompressed data
 
 magicc <- select(magicc, scenario, Exceedance_Max_1p5C,
                  Exceedance_2100_1p5C, Exceedance_Max_2C, Exceedance_2100_2C)
